@@ -1,0 +1,35 @@
+---
+- name: Deploy do nosso site com Docker
+  hosts: webserver
+  become: yes # Permite que o Ansible use 'sudo' para os comandos
+
+  tasks:
+    - name: 1. Garantir que o Git e o Docker estejam instalados
+      apt:
+        name:
+          - git
+          - docker.io
+        state: present
+        update_cache: yes
+
+    - name: 2. Clonar o repositório do GitHub com o código do site
+      git:
+        repo: https://github.com/DEVMOISESALVES/meus-estudos-devops.git
+        dest: /home/ubuntu/meus-estudos-devops
+
+    - name: 3. Construir a imagem Docker a partir do Dockerfile
+      community.docker.docker_image:
+        name: meu-site-pessoal-ansible
+        build:
+          path: /home/ubuntu/meus-estudos-devops/meu-site-docker
+        source: build
+        state: present
+
+    - name: 4. Rodar o contêiner Docker com o site
+      community.docker.docker_container:
+        name: meu-site-web-ansible
+        image: meu-site-pessoal-ansible
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"

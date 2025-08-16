@@ -1,20 +1,16 @@
-# Nome do nosso workflow, que aparecerá no GitHub
 name: Deploy do Site na AWS com Ansible
 
-# Gatilho: rodar sempre que houver um push na branch 'main'
 on:
   push:
     branches:
       - main
 
-# Tarefas a serem executadas
 jobs:
   deploy:
-    # A máquina virtual que o GitHub vai usar para rodar nosso trabalho
     runs-on: ubuntu-latest
 
     steps:
-      # Passo 1: Baixar nosso código para dentro da máquina virtual
+      # Passo 1: Baixar nosso código
       - name: Checkout do repositório
         uses: actions/checkout@v4
 
@@ -22,18 +18,18 @@ jobs:
       - name: Instalar o Ansible
         run: sudo apt-get install -y ansible
 
-      # Passo 3: Configurar a chave SSH a partir do nosso segredo
+      # Passo 3: Configurar a chave SSH a partir do segredo
       - name: Configurar a chave SSH
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
-      # Passo 4: Criar o arquivo de inventário do Ansible dinamicamente
+      # Passo 4: Criar o arquivo de inventário dinamicamente
       - name: Criar o arquivo de inventário
         run: |
-          echo "[webserver]" > inventory.ini
-          echo "${{ secrets.SERVER_HOST }} ansible_user=ubuntu ansible_private_key_file=private_key.pem" >> inventory.ini
+          echo "[webserver]" > ansible/inventory.ini
+          echo "${{ secrets.SERVER_HOST }} ansible_user=ubuntu ansible_private_key_file=../private_key.pem" >> ansible/inventory.ini
 
       # Passo 5: Rodar o Playbook do Ansible!
       - name: Executar o Playbook de Deploy
-        run: ansible-playbook -i inventory.ini ~/ansible-deploy/deploy_site.yml
+        run: ansible-playbook -i ansible/inventory.ini ansible/deploy_site.yml
