@@ -28,7 +28,8 @@ jobs:
       - name: Criar o arquivo de inventário
         run: |
           echo "[webserver]" > ansible/inventory.ini
-          echo "${{ secrets.SERVER_HOST }} ansible_user=ubuntu ansible_private_key_file=../private_key.pem" >> ansible/inventory.ini
+          # CORREÇÃO AQUI: Usando um caminho absoluto para a chave
+          echo "${{ secrets.SERVER_HOST }} ansible_user=ubuntu ansible_private_key_file=${{ github.workspace }}/private_key.pem" >> ansible/inventory.ini
 
       # Passo 5: Rodar o Playbook do Ansible!
       - name: Executar o Playbook de Deploy
