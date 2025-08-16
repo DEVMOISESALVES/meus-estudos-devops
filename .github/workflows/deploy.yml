@@ -32,4 +32,4 @@ jobs:
 
       # Passo 5: Rodar o Playbook do Ansible!
       - name: Executar o Playbook de Deploy
-        run: run: ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.ini ansible/deploy_site.yml
+        run: ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.ini ansible/deploy_site.yml
